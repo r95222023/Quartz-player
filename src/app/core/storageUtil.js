@@ -98,6 +98,18 @@
         return 'FBS:' + (path.split('.js')[1] === '') ? (path.split('.js')[0]) : path;
     }
 
+    StorageUtil.prototype.getDownloadUrls = getDownloadUrls;
+    function getDownloadUrls(siteName, srcArr) {
+        var promises = [];
+        srcArr.forEach(function (src, index) {
+            if (src.search('//') === -1) {
+                promises[index] = this.ref('file-path?siteName='+siteName+'&path=' + src).getDownloadURL();
+            } else {
+                promises[index] = Promise.resolve(src);
+            }
+        });
+        return Promise.all(promises);
+    }
 
 
     var storagePromises = {},

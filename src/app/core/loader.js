@@ -10,14 +10,6 @@
         module.exports = Loader
     }
 
-    var COMMONPACKAGES = {
-        ngMaterial: {
-            v: '1.1.0',
-            ngModule: 'ngMaterial',
-            css: 'https://ajax.googleapis.com/ajax/libs/angular_material/:version/angular-material.min.css',
-            js: 'https://ajax.googleapis.com/ajax/libs/angular_material/:version/angular-material.min.js'
-        }
-    };
 
     var PRESETS = {
         ngMaterial: {
@@ -33,12 +25,24 @@
         },
         ng1: {
             js: [
-                // 'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js',
-                // 'http://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-animate.min.js',
-                // 'http://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-aria.min.js',
-                // 'http://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-messages.min.js',
-                // 'http://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-sanitize.min.js',
+                'https://code.jquery.com/jquery-2.2.4.min.js',
+                'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js',
+                'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-animate.min.js',
+                'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-aria.min.js',
+                'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-cookies.min.js',
+                'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-messages.min.js',
+                'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-sanitize.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/1.0.0-beta.3/angular-ui-router.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/angular-translate/2.12.1/angular-translate.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/angular-translate/2.12.1/angular-translate-loader-partial/angular-translate-loader-partial.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/angular-translate/2.12.1/angular-translate-storage-cookie/angular-translate-storage-cookie.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/angular-translate/2.12.1/angular-translate-storage-local/angular-translate-storage-local.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/oclazyload/1.0.9/ocLazyLoad.min.js'
             ],
+            css: []
+        },
+        core: {
+            js: ['presets/core/scripts/vendor.js','presets/core/scripts/vendor.js'],
             css: []
         }
     };
@@ -49,19 +53,31 @@
     }
 
     Loader.prototype.loadPreset = function (opt) {
-        var _opt = opt || {};
-        var presetName = _opt.preset || 'ng1';
-        var preset = PRESETS[presetName];
-        var scripts = preset.js.concat([
-            'presets/' + presetName + '/scripts/vendor.js',
-            'presets/' + presetName + '/scripts/main.js'
-        ]);
-        var styles = preset.css.concat([
-            'presets/' + presetName + '/styles/vendor.css',
-            'presets/' + presetName + '/styles/main.css'
-        ]);
-        loadSources('script',scripts);
-        loadSources('style',styles);
+        var self= this;
+        return new Promise(function(resolve, reject){
+            var _opt = opt || {};
+            var presetName = _opt.preset || 'ng1';
+            var scripts_1 = _opt.scripts_1 || [];
+            var scripts_2 = _opt.scripts_2 || [];
+            var scripts_3 = _opt.scripts_3 || [];
+            var preset = PRESETS[presetName];
+            var scripts = scripts_1
+                .concat(
+                    preset.js,
+                    // ['presets/' + presetName + '/scripts/vendor.js'],
+                    scripts_2,
+                    ['presets/' + presetName + '/scripts/main.js'],
+                    scripts_3, resolve);
+            var styles = preset.css.concat([
+                'presets/' + presetName + '/styles/vendor.css',
+                'presets/' + presetName + '/styles/main.css'
+            ], _opt.styles||[]);
+            // loadSources('script', scripts).then(function(){
+            //     resolve();
+            // });
+            self.loadScripts(scripts, true);
+            loadSources('style', styles);
+        });
     };
 
     function loadSources(type, sources) {
@@ -101,36 +117,13 @@
         }
     }
 
-    Loader.prototype.loadPackages = function (name, opt, ngModules) {
-        var _opt = opt || {};
-        var version = _opt.version || COMMONPACKAGES[name].v;
-        var loadPromises = [];
-        var script = document.createElement('script');
-        script.type = "text/javascript";
-        if (_opt.js !== false) loadPromises.push(new Promise(function (resolve, reject) {
-            script.onload = resolve;
-            document.body.appendChild(script);
-            script.src = COMMONPACKAGES[name].js.replace(':version', version);
-        }));
-        var link = document.createElement('link');
-        link.rel = "stylesheet";
-        link.type = "text/css";
-        link.href = COMMONPACKAGES[name].css.replace(':version', version);
-        if (_opt.css !== false) loadPromises.push(new Promise(function (resolve, reject) {
-            link.onload = resolve;
-            document.head.appendChild(link);
-        }));
-
-        if (COMMONPACKAGES[name].ngModule) ngModules.push(COMMONPACKAGES[name].ngModule);
-        return Promise.all(loadPromises);
-    };
-
 
     Loader.prototype.getExternalSourceUrls = function (sources, siteName) {
         var self = this,
             promises = [];
         var _sourcesArr = sources || [];
-        _sourcesArr.forEach(function (src, index) {
+        _sourcesArr.forEach(function (source, index) {
+            var src = source.src||source.href;
             if (src.search('//') !== -1) {
                 promises.push(Promise.resolve(src));
             } else {
@@ -176,5 +169,148 @@
         }
 
         return {script: res.script, css: res.css, sources: res.sources, html: _html};
+    };
+
+    // 2012 Pablo Moretti, https://github.com/pablomoretti/jcors-loader
+    function JcorsLoader(srcArr, instant){
+        var document = window.document,
+            node_createElementScript = document.createElement('script'),
+            node_elementScript = document.getElementsByTagName('script')[0],
+            buffer = [],
+            promises = [],
+            resolves = [],
+            lastBufferIndex = 0,
+            createCORSRequest = (function () {
+                var xhr,
+                    CORSRequest;
+                if (window.XMLHttpRequest) {
+                    xhr = new window.XMLHttpRequest();
+                    if ("withCredentials" in xhr) {
+                        CORSRequest = function (url) {
+                            xhr = new window.XMLHttpRequest();
+                            xhr.open('get', url, true);
+                            return xhr;
+                        };
+                    } else if (window.XDomainRequest) {
+                        CORSRequest = function (url) {
+                            xhr = new window.XDomainRequest();
+                            xhr.open('get', url);
+                            return xhr;
+                        };
+                    }
+                }
+                return CORSRequest;
+            }());
+
+        function execute(script) {
+            if (typeof script === 'string') {
+                var g = node_createElementScript.cloneNode(false);
+                g.text = script;
+                node_elementScript.parentNode.insertBefore(g, node_elementScript);
+            } else {
+                script.apply(window);
+            }
+        }
+
+        function saveInBuffer(index, script) {
+            buffer[index] = script;
+        }
+
+        function finishedTask(index) {
+            saveInBuffer(index, null);
+            lastBufferIndex = index+1;
+        }
+
+        function executeBuffer() {
+            if(!instant) return;
+            var dep = true,
+                script,
+                index = lastBufferIndex,
+                len = buffer.length;
+
+            while (index < len && dep) { //excute buffer[lastBufferIndex-->the end of buffer] on every onload event this ensure every script will eventually be executed.
+                script = buffer[index];
+                if (script !== undefined && script !== null) {
+                    execute(script);
+                    finishedTask(index);
+                    index += 1;
+                } else {
+                    dep = false;
+                }
+            }
+        }
+
+        function loadsAndExecuteScriptsOnChain() {
+            if (buffer.length) {
+                var scr = buffer.pop(),
+                    script;
+                if (typeof scr === 'string') {
+                    script = node_createElementScript.cloneNode(true);
+                    script.type = "text/javascript";
+                    script.async = true;
+                    script.src = scr;
+                    script.onload = script.onreadystatechange = function () {
+                        if (!script.readyState || /loaded|complete/.test(script.readyState)) {
+                            // Handle memory leak in IE
+                            script.onload = script.onreadystatechange = null;
+                            // Dereference the script
+                            script = undefined;
+                            // Load
+                            loadsAndExecuteScriptsOnChain();
+                        }
+                    };
+                    node_elementScript.parentNode.insertBefore(script, node_elementScript);
+                } else {
+                    scr.apply(window);
+
+                    loadsAndExecuteScriptsOnChain();
+                }
+            }
+        }
+
+        function onloadCORSHandler(request, index) {
+            return function () {
+                saveInBuffer(index, request.responseText);
+                resolves[index](request.responseText);
+                executeBuffer();
+                // Dereference the script
+                request = undefined;
+            };
+        }
+
+        /* public */
+
+        function loadWithCORS() {
+            var index,
+                request;
+            srcArr.forEach(function(src){
+                request = createCORSRequest(src);
+                request.onload = onloadCORSHandler(request, buffer.length);
+                promises[buffer.length] = new Promise(function(resolve,reject){
+                    resolves[buffer.length] = resolve;
+                });
+                saveInBuffer(buffer.length, null);
+                request.send();
+            })
+        }
+
+        function loadWihtOutCORS() {
+            buffer.push(Array.prototype.slice.call(srcArr, 0).reverse());
+            loadsAndExecuteScriptsOnChain();
+        }
+        (createCORSRequest ? loadWithCORS  : loadWihtOutCORS)();
+        this.promise = Promise.all(promises);
+        this.exec = function(){
+            if(instant) return;
+            this.promise.then(function(res){
+                res.forEach(function(script){
+                    execute(script);
+                })
+            })
+        }
+    }
+
+    Loader.prototype.loadScripts=function(srcArr, instant){
+        return new JcorsLoader(srcArr, instant);
     };
 })();

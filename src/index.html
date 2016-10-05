@@ -11,8 +11,7 @@
     <link id="dynamic-favicon" rel="icon" type="image/png" href="favicon.png"/>
     <!--<script src="assets/core/systemjs/system.js"></script>-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/2.4.1/core.min.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
-    <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.4.1/firebase.js"></script>
 
 </head>
 <body translate-cloak ng-class="bodyClasses">
@@ -21,7 +20,8 @@
     your browser</a> to improve your experience.</p>
 <![endif]-->
 
-<div ui-view></div>
+<div class="full-height" ui-view="root"></div>
+
 
 <!--<script src="https://www.gstatic.com/firebasejs/3.0.0/firebase.js"></script>-->
 
@@ -43,21 +43,19 @@
     ga('send', 'pageview');
 </script>
 
-<!-- build:js(src) scripts/core.js -->
-<!-- inject:core -->
-<!-- core js files will be automatically insert here -->
-<!-- endinject -->
-<!-- endbuild -->
-
 <!-- build:js(src) scripts/vendor.js -->
 <!-- bower:js -->
 <!-- endbower -->
 <!-- endbuild -->
 
-<!-- build:js({.tmp/serve,.tmp/partials,src}) scripts/app.js -->
+<!-- build:js(src) scripts/core.js -->
+<!-- inject:core -->
+<!-- core js files will be automatically insert here -->
+<!-- endinject -->
 <!-- inject:js -->
 <!-- js files will be automatically insert here -->
 <!-- endinject -->
 <!-- endbuild -->
+
 </body>
 </html>
