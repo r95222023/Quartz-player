@@ -81,7 +81,7 @@
 
         return new Promise(function (resolve, reject) {
             if (!user) reject('AUTH_NEEDED');
-            this.util.getSiteName().then(function (siteName) {
+            this.util.site.getSiteName().then(function (siteName) {
                 self.util.database.queryRef('site-user', {
                     siteName: siteName,
                     type: 'detail',
@@ -119,8 +119,7 @@
             basicData = this.getBasicUserData(user);
 
         return new Promise(function (resolve, reject) {
-
-            self.util.getSiteName().then(function (siteName) {
+            self.util.site.getSiteName().then(function (siteName) {
                 var params = {
                         siteName: siteName,
                         userId: user.uid

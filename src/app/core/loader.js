@@ -52,26 +52,33 @@
         this.util = util;
     }
 
-    Loader.prototype.loadPreset = function (opt) {
+    Loader.prototype.loadPreset = function (preload) {
         var self= this;
         return new Promise(function(resolve, reject){
-            var _opt = opt || {};
-            var presetName = _opt.preset || 'ng1';
-            var scripts_1 = _opt.scripts_1 || [];
-            var scripts_2 = _opt.scripts_2 || [];
-            var scripts_3 = _opt.scripts_3 || [];
+            var _preload = preload || {};
+            var presetName = _preload.preset || 'ng1';
             var preset = PRESETS[presetName];
-            var scripts = scripts_1
-                .concat(
-                    preset.js,
-                    // ['presets/' + presetName + '/scripts/vendor.js'],
-                    scripts_2,
-                    ['presets/' + presetName + '/scripts/main.js'],
-                    scripts_3, resolve);
+
+            var scripts = [];
+            var pushScripts = function(source){
+                if(typeof source==='string'){
+                    scripts.push(source);
+                } else {
+                    scripts.push(source._src||source.src);
+                }
+            };
+            (_preload.scripts_1 || []).forEach(pushScripts);
+            preset.js.forEach(pushScripts);
+            (_preload.scripts_2 || []).forEach(pushScripts);
+            scripts.push('presets/' + presetName + '/scripts/main.js');
+
             var styles = preset.css.concat([
                 'presets/' + presetName + '/styles/vendor.css',
                 'presets/' + presetName + '/styles/main.css'
-            ], _opt.styles||[]);
+            ]);
+            (_preload.styles_1||[]).forEach(function(source){
+                styles.push(source._src||source.src);
+            });
             // loadSources('script', scripts).then(function(){
             //     resolve();
             // });
@@ -128,7 +135,7 @@
                 promises.push(Promise.resolve(src));
             } else {
                 var _path = src.charAt(0) === '/' ? 'file-root-path?path=' + src : 'file-path?path=' + src,
-                    promise = self.util.storage.ref(_path, {siteName: siteName || self.util.siteName}).getDownloadURL();
+                    promise = self.util.storage.ref(_path, {siteName: siteName || self.util.site.siteName}).getDownloadURL();
                 promises.push(promise);
             }
         });

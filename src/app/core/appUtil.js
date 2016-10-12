@@ -92,6 +92,7 @@
         this.usage.init();
 
         this.auth = new window._core.Auth(this);
+        this.site = new window._core.SiteUtil(this);
 
         this.loader = new window._core.Loader(this);
     }
@@ -119,113 +120,6 @@
 
         res = isFile && fileExtension ? (res + '.js') : res;
         return res
-    };
-
-    AppUtil.prototype.getSiteName = function () {
-        var self = this;
-        if (this.siteName) {
-            return Promise.resolve(this.siteName);
-        } else if (location.href.search('localhost') !== -1||location.href.search('firebaseapp\.com') !== -1) {
-            var regEx = /#!\/(.*?)\//;
-            var match = location.href.match(regEx);
-            return Promise.resolve(match ? match[1] : 'default');
-        } else {
-            return new Promise(function (resolve, reject) {
-                var url = location.href,
-                    domain = url.split('//')[1].split('/')[0];
-
-                self.database.queryRef('sites', {
-                    params: {type: 'list'},
-                    orderBy: 'Child: domain',
-                    equalTo: domain,
-                    limitToFirst: 1
-                })
-                    .once('child_added', function (snap) {
-                        var val = snap.val();
-                        if (!!val && val.siteName) {
-                            resolve(val.siteName);
-                        } else {
-                            resolve(url.split('#!/')[1].split('/')[0]);
-                        }
-                    })
-            })
-        }
-    };
-
-    AppUtil.prototype.getPageName= function(){
-        var self = this;
-        if (this.pageName) {
-            return Promise.resolve(this.pageName);
-        } else if (location.href.search('localhost') !== -1||location.href.search('firebaseapp\.com') !== -1) {
-            var regEx = /#!\/.*?\/(.*?)\//;
-            var match = location.href.match(regEx);
-            return match ? match[1] : 'index'
-        } else {
-            var url = location.href;
-            return url.split('//')[1].split('/')[1];
-        }
-    };
-
-    AppUtil.prototype.setSiteName = function (siteName) {
-        this.siteName = siteName;
-    };
-
-    var siteCache = {};
-    AppUtil.prototype.getSitePreload = function () {
-        var self = this;
-        return new Promise(function (resolve, reject) {
-            self.getSiteName().then(function (siteName) {
-                siteCache[siteName] =siteCache[siteName]||{};
-                console.log(siteName)
-                if (siteCache[siteName].preload) {
-                    resolve(siteCache[siteName].preload);
-                } else {
-                    self.storage.getWithCache('site-config-preload?siteName=' + siteName).then(function (res) {
-                        siteCache[siteName].preload=res;
-                        resolve(res);
-                    }).catch(reject);
-                }
-            })
-        });
-    };
-    function isJS(source){
-        if(typeof source==='object'){
-            var url=source.src;
-            return source.type==='text/javascript'||url.match(/\.js$/)!==null;
-        }
-    }
-    AppUtil.prototype.loadPage = function (_siteName,_pageName) {
-        var self = this;
-        return new Promise(function (resolve, reject) {
-            self.getSiteName().then(function (SITENAME) {
-                var siteName = _siteName||SITENAME;
-                siteCache[siteName] =siteCache[siteName]||{};
-                siteCache[siteName].pageCache = siteCache[siteName].pageCache||{};
-                var pageName = _pageName||self.getPageName();
-                if (siteCache[siteName].pageCache[pageName]) {
-                    resolve(siteCache[siteName].pageCache[pageName]);
-                } else {
-                    self.storage.getWithCache('page?type=detail&id='+pageName+'&siteName=' + siteName).then(function (pageData) {
-                        var _pageData = pageData||{};
-                        var sources = _pageData.sources||[];
-                        self.getSiteName().then(function(siteName){
-                            self.loader.getExternalSourceUrls(sources, siteName).then(function(srcs){
-                                sources.forEach(function(source, index){
-                                    if(source.src) {
-                                        sources[index].src = srcs[index];
-                                    } else if(source.href){
-                                        sources[index].href = srcs[index];
-                                    }
-                                });
-                                _pageData.sources= sources;
-                                resolve(_pageData);
-                                siteCache[siteName].pageCache[pageName]=_pageData;
-                            })
-                        })
-                    }).catch(reject);
-                }
-            })
-        });
     };
 
     function formalizeKey(key) {

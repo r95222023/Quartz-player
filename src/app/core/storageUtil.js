@@ -100,10 +100,11 @@
 
     StorageUtil.prototype.getDownloadUrls = getDownloadUrls;
     function getDownloadUrls(siteName, srcArr) {
-        var promises = [];
+        var promises = [],
+            self = this;
         srcArr.forEach(function (src, index) {
             if (src.search('//') === -1) {
-                promises[index] = this.ref('file-path?siteName='+siteName+'&path=' + src).getDownloadURL();
+                promises[index] = self.ref('file-path?siteName='+siteName+'&path=' + src).getDownloadURL();
             } else {
                 promises[index] = Promise.resolve(src);
             }
