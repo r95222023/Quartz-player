@@ -12,39 +12,34 @@
 
 
     var PRESETS = {
-        ngMaterial: {
-            js: [
-                // 'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js',
-                // 'http://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-animate.min.js',
-                // 'http://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-aria.min.js',
-                // 'http://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-messages.min.js',
-                // 'http://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-sanitize.min.js',
-                // 'https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js',
-            ],
-            css: []
-        },
-        ng1: {
-            js: [
-                'https://code.jquery.com/jquery-2.2.4.min.js',
-                'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js',
-                'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-animate.min.js',
-                'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-aria.min.js',
-                'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-cookies.min.js',
-                'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-messages.min.js',
-                'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-sanitize.min.js',
-                'https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/1.0.0-beta.3/angular-ui-router.min.js',
-                'https://cdnjs.cloudflare.com/ajax/libs/angular-translate/2.12.1/angular-translate.min.js',
-                'https://cdnjs.cloudflare.com/ajax/libs/angular-translate/2.12.1/angular-translate-loader-partial/angular-translate-loader-partial.min.js',
-                'https://cdnjs.cloudflare.com/ajax/libs/angular-translate/2.12.1/angular-translate-storage-cookie/angular-translate-storage-cookie.min.js',
-                'https://cdnjs.cloudflare.com/ajax/libs/angular-translate/2.12.1/angular-translate-storage-local/angular-translate-storage-local.min.js',
-                'https://cdnjs.cloudflare.com/ajax/libs/oclazyload/1.0.9/ocLazyLoad.min.js'
-            ],
-            css: []
-        },
         core: {
             js: ['presets/core/scripts/vendor.js','presets/core/scripts/vendor.js'],
             css: []
         }
+    };
+    PRESETS.ng1={
+        js: [
+            'https://code.jquery.com/jquery-2.2.4.min.js',
+            'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js',
+            'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-animate.min.js',
+            'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-aria.min.js',
+            'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-cookies.min.js',
+            'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-messages.min.js',
+            'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-sanitize.min.js',
+            'https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/1.0.0-beta.3/angular-ui-router.min.js',
+            'https://cdnjs.cloudflare.com/ajax/libs/angular-translate/2.12.1/angular-translate.min.js',
+            'https://cdnjs.cloudflare.com/ajax/libs/angular-translate/2.12.1/angular-translate-loader-partial/angular-translate-loader-partial.min.js',
+            'https://cdnjs.cloudflare.com/ajax/libs/angular-translate/2.12.1/angular-translate-storage-cookie/angular-translate-storage-cookie.min.js',
+            'https://cdnjs.cloudflare.com/ajax/libs/angular-translate/2.12.1/angular-translate-storage-local/angular-translate-storage-local.min.js',
+            'https://cdnjs.cloudflare.com/ajax/libs/oclazyload/1.0.9/ocLazyLoad.min.js'
+        ],
+        css: []
+    };
+    PRESETS.ngMaterial = {
+        js:PRESETS.ng1.js.concat(['https://ajax.googleapis.com/ajax/libs/angular_material/1.1.1/angular-material.min.js',
+            'https://cdnjs.cloudflare.com/ajax/libs/angular-material-data-table/0.10.9/md-data-table.min.js']),
+        css:['http://ajax.googleapis.com/ajax/libs/angular_material/1.1.1/angular-material.min.css',
+            'https://cdnjs.cloudflare.com/ajax/libs/angular-material-data-table/0.10.9/md-data-table.min.css']
     };
 
     function Loader(util) {

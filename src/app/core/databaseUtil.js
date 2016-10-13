@@ -231,7 +231,6 @@
         this.listenerCallback = _ref[limitToType](limitTo).on('value', onValue, reject);
         function onValue(snap) {
             var _page = 1,
-                items = 0,
                 arr = [];
             snap.forEach(function (childSnap) {
                 arr.push(Object.assign({_key: childSnap.key}, childSnap.val()));
@@ -245,14 +244,14 @@
                 }, self.query));
             }
 
-            sortedArr.forEach(function (value) {
-                items++;
-                if (items > _page * parseInt(size)) {
+            sortedArr.forEach(function (value, index) {
+                var itemsOnPreviousPages=_page * parseInt(size);
+                if (index+1 > itemsOnPreviousPages) {
                     _page++;
                 }
                 var id = getPaginationId(_page, size, orderBy);
-                self.cache[id] = self.cache[id] || [];
-                self.cache[id].push(value);
+                self.cache[id] = self.cache[id] ||[];
+                self.cache[id][_page===1? index: (index-itemsOnPreviousPages)]=value;
             });
 
             var hits = self.cache[getPaginationId(page, size, orderBy)];
