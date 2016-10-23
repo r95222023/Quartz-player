@@ -17,29 +17,33 @@
             css: []
         }
     };
+    var cdnjs = 'https://cdnjs.cloudflare.com/ajax/libs',
+        googleapis = 'https://ajax.googleapis.com/ajax/libs';
     PRESETS.ng1={
         js: [
-            'https://code.jquery.com/jquery-2.2.4.min.js',
-            'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js',
-            'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-animate.min.js',
-            'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-aria.min.js',
-            'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-cookies.min.js',
-            'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-messages.min.js',
-            'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-sanitize.min.js',
-            'https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/1.0.0-beta.3/angular-ui-router.min.js',
-            'https://cdnjs.cloudflare.com/ajax/libs/angular-translate/2.12.1/angular-translate.min.js',
-            'https://cdnjs.cloudflare.com/ajax/libs/angular-translate/2.12.1/angular-translate-loader-partial/angular-translate-loader-partial.min.js',
-            'https://cdnjs.cloudflare.com/ajax/libs/angular-translate/2.12.1/angular-translate-storage-cookie/angular-translate-storage-cookie.min.js',
-            'https://cdnjs.cloudflare.com/ajax/libs/angular-translate/2.12.1/angular-translate-storage-local/angular-translate-storage-local.min.js',
-            'https://cdnjs.cloudflare.com/ajax/libs/oclazyload/1.0.9/ocLazyLoad.min.js'
+            cdnjs+'/jquery/2.2.4/jquery.min.js',
+            googleapis+'/angularjs/1.5.7/angular.min.js',
+            googleapis+'/angularjs/1.5.7/angular-animate.min.js',
+            googleapis+'/angularjs/1.5.7/angular-aria.min.js',
+            googleapis+'/angularjs/1.5.7/angular-cookies.min.js',
+            googleapis+'/angularjs/1.5.7/angular-messages.min.js',
+            googleapis+'/angularjs/1.5.7/angular-sanitize.min.js',
+            cdnjs+'/angular-ui-router/1.0.0-beta.3/angular-ui-router.min.js',
+            cdnjs+'/angular-translate/2.12.1/angular-translate.min.js',
+            cdnjs+'/angular-translate/2.12.1/angular-translate-loader-partial/angular-translate-loader-partial.min.js',
+            cdnjs+'/angular-translate/2.12.1/angular-translate-storage-cookie/angular-translate-storage-cookie.min.js',
+            cdnjs+'/angular-translate/2.12.1/angular-translate-storage-local/angular-translate-storage-local.min.js',
+            cdnjs+'/angulartics/1.2.1/angulartics.min.js',
+            cdnjs+'/angulartics-google-analytics/0.2.1/angulartics-ga.min.js',
+            cdnjs+'/oclazyload/1.0.9/ocLazyLoad.min.js'
         ],
         css: []
     };
     PRESETS.ngMaterial = {
-        js:PRESETS.ng1.js.concat(['https://ajax.googleapis.com/ajax/libs/angular_material/1.1.1/angular-material.min.js',
-            'https://cdnjs.cloudflare.com/ajax/libs/angular-material-data-table/0.10.9/md-data-table.min.js']),
-        css:['http://ajax.googleapis.com/ajax/libs/angular_material/1.1.1/angular-material.min.css',
-            'https://cdnjs.cloudflare.com/ajax/libs/angular-material-data-table/0.10.9/md-data-table.min.css']
+        js:PRESETS.ng1.js.concat([googleapis+'/angular_material/1.1.1/angular-material.min.js',
+            cdnjs+'/angular-material-data-table/0.10.9/md-data-table.min.js']),
+        css:[googleapis+'/angular_material/1.1.1/angular-material.min.css',
+            cdnjs+'/angular-material-data-table/0.10.9/md-data-table.min.css']
     };
 
     function Loader(util) {
@@ -51,7 +55,7 @@
         var self= this;
         return new Promise(function(resolve, reject){
             var _preload = preload || {};
-            var presetName = _preload.preset || 'ng1';
+            var presetName = _preload.preset&&_preload.preset.id? _preload.preset.id : 'ng1';
             var preset = PRESETS[presetName];
 
             var scripts = [];

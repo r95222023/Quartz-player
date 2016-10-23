@@ -39,7 +39,7 @@
             'site': 'sites/:type/:siteName',
             'site-path': site + '/:path',
             'site-config-preload': site + '/config/preload',
-            'site-config-payment': site + '/config/payment/:provider/:privacy',
+            'site-config-payment': site + '/config/payment/:provider',
             'files': site + '/files',
             'file-path': site + '/files/:path',
             'file-root-path': site + '/files:path',
@@ -60,6 +60,8 @@
             'article-categories': site + '/articles/config/categories',
             'article': site + '/articles/:type/:id',
             'orders': site + '/orders/:type',
+            'site-orders': site + '/orders/:type',
+            'site-order': site + '/orders/:type/:id',
             'order-payment': site + '/orders/:type/:orderId/payment',
             'user-order-payment': user + '/orders/:type/:orderId/payment',
             'user-orders': user + '/orders/:type',
@@ -95,6 +97,7 @@
         this.site = new window._core.SiteUtil(this);
 
         this.loader = new window._core.Loader(this);
+        this.analytics = new window._core.Analytics(this);
     }
 
     AppUtil.prototype.parseRefUrl = function (refUrl, option, isFile) {
