@@ -237,11 +237,11 @@
             });
             var sortedArr = arr;
             if (self.query.filter) {
-                sortedArr = self.query.filter(arr, Object.assign({
+                sortedArr = self.query.filter(arr, Object.assign(self.query,{
                     page: page,
                     size: size,
                     orderBy: orderBy
-                }, self.query));
+                }));
             }
 
             sortedArr.forEach(function (value, index) {

@@ -39,7 +39,8 @@
             'site': 'sites/:type/:siteName',
             'site-path': site + '/:path',
             'site-config-preload': site + '/config/preload',
-            'site-config-payment': site + '/config/payment/:provider',
+            'site-config-user': site+'/config/user',
+            'site-config-payment': site + '/config/payment/',
             'files': site + '/files',
             'file-path': site + '/files/:path',
             'file-root-path': site + '/files:path',
@@ -67,7 +68,8 @@
             'user-orders': user + '/orders/:type',
             'order-payment-allpay': site + '/orders/detail/:orderId/payment/allpay',
             'orders-analysis': site + '/orders/analysis/:dateId',
-            'notifications': 'users/detail/:uid/notifications'
+            'notifications': 'users/detail/:uid/notifications',
+            'plans':'plans/:type'
         };
 
 
