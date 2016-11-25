@@ -127,15 +127,6 @@
         return res
     };
 
-    function formalizeKey(key) {
-        var res = key, replace = [[/\./g, '^%0'], [/#/g, '^%1'], [/\$/g, '^%2'], [/\[/g, '^%3'], [/\]/g, '^%4']];
-        for (var i = 0; i < replace.length; i++) {
-            res = res.replace(replace[i][0], replace[i][1]);
-        }
-        // ".", "#", "$", "/", "[", or "]"
-        return res;
-    }
-
 
 })(firebase);
 

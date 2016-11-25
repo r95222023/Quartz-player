@@ -57,6 +57,20 @@
         return ref;
     };
 
+    var replace = [[/\./g, '^%0'], [/#/g, '^%1'], [/\$/g, '^%2'], [/\[/g, '^%3'], [/\]/g, '^%4']];
+    // ".", "#", "$", "/", "[", or "]"
+
+    function rectifyKey(key, isReverse) {
+        var res = key;
+        for (var i = 0; i < replace.length; i++) {
+            res = res.replace(replace[i][isReverse ? 0 : 1], replace[i][isReverse ? 1 : 0]);
+        }
+        return res;
+    }
+
+    DatabaseUtil.prototype.formalizeKey = function(key){return rectifyKey(key)};
+    DatabaseUtil.prototype.deFormalizeKey = function(key){return rectifyKey(key,true)};
+
     function isOutdated(editTime, cached) {
         var cachedVal = _core.encoding.decompress({compressed: cached});
         return !(editTime && editTime < cachedVal.cachedTime);
@@ -184,7 +198,7 @@
             preload = this.query.preload || 2,
             id = getPaginationId(page, size, orderBy);
         if (self.cache && self.cache[id] && parseInt(page) + preload < self.maxCachedPage) {
-            self.result.hits =  self.cache[id];
+            self.result.hits = self.cache[id];
             return Promise.resolve(self.cache[id]);
         } else {
             self.maxCachedPage = parseInt(page) + 2 * preload;
@@ -237,7 +251,7 @@
             });
             var sortedArr = arr;
             if (self.query.filter) {
-                sortedArr = self.query.filter(arr, Object.assign(self.query,{
+                sortedArr = self.query.filter(arr, Object.assign(self.query, {
                     page: page,
                     size: size,
                     orderBy: orderBy
@@ -245,13 +259,13 @@
             }
 
             sortedArr.forEach(function (value, index) {
-                var itemsOnPreviousPages=_page * parseInt(size);
-                if (index+1 > itemsOnPreviousPages) {
+                var itemsOnPreviousPages = _page * parseInt(size);
+                if (index + 1 > itemsOnPreviousPages) {
                     _page++;
                 }
                 var id = getPaginationId(_page, size, orderBy);
-                self.cache[id] = self.cache[id] ||[];
-                self.cache[id][_page===1? index: (index-itemsOnPreviousPages)]=value;
+                self.cache[id] = self.cache[id] || [];
+                self.cache[id][_page === 1 ? index : (index - itemsOnPreviousPages)] = value;
             });
 
             var hits = self.cache[getPaginationId(page, size, orderBy)];
