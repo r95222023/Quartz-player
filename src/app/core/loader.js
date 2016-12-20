@@ -59,18 +59,31 @@
             var preset = PRESETS[presetName];
 
             var scripts = [];
-            var pushScripts = function(source){
+            var pushScript = function(source){
                 if(typeof source==='string'){
                     scripts.push(source);
-                } else {
+                } else{
                     scripts.push(source._src||source.src);
                 }
             };
-            (_preload.scripts_1 || []).forEach(pushScripts);
-            preset.js.forEach(pushScripts);
-            (_preload.scripts_2 || []).forEach(pushScripts);
+            var pushPlugin = function (plugin){
+                if(plugin.js){
+                    plugin.js.forEach(function(path){
+                        scripts.push('presets/' + presetName + '/plugins/'+plugin.name+path+'.js');
+                    })
+                }
+                if(plugin.css){
+                    plugin.styles.forEach(function(path){
+                        scripts.push('presets/' + presetName + '/plugins/'+plugin.name+path+'.css');
+                    })
+                }
+            };
+            (_preload.scripts_1 || []).forEach(pushScript);
+            preset.js.forEach(pushScript);
+            (_preload.plugins || []).forEach(pushPlugin);
+            (_preload.scripts_2 || []).forEach(pushScript);
             scripts.push('presets/' + presetName + '/scripts/main.js');
-
+            console.log(_preload.plugins)
             var styles = preset.css.concat([
                 'presets/' + presetName + '/styles/vendor.css',
                 'presets/' + presetName + '/styles/main.css'

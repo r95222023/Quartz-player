@@ -14,6 +14,7 @@
         this.util = util;
         this.siteName = '';
         this.domain='';
+        this.cache = {};
         var self = this;
 
 
@@ -33,7 +34,7 @@
     };
 
     function getSiteNameFromURL(){
-        var siteNameRegEx = /.*?\/\/.*?(\/preview\/#!\/preview\/|\/#!\/|\/)(.*?)\//;
+        var siteNameRegEx = /.*?\/\/.*?(\/preview\/#!\/preview\/|\/#!\/test\/|\/#!\/|\/)(.*?)\//;
         var match = location.href.match(siteNameRegEx);
         var res = match ? match[2] : '';
         return res&&res.search('#')===-1? res:'';
@@ -62,17 +63,17 @@
             })
         }
     };
-    var siteCache = {};
+
     SiteUtil.prototype.getSitePreload = function () {
         var self = this;
         return new Promise(function (resolve, reject) {
             self.getSiteName().then(function (siteName) {
-                siteCache[siteName] = siteCache[siteName] || {};
-                if (siteCache[siteName].preload) {
-                    resolve(siteCache[siteName].preload);
+                self.cache[siteName] = self.cache[siteName] || {};
+                if (self.cache[siteName].preload) {
+                    resolve(self.cache[siteName].preload);
                 } else {
                     self.util.storage.getWithCache('site-config-preload?siteName=' + siteName).then(function (res) {
-                        siteCache[siteName].preload = res;
+                        self.cache[siteName].preload = res;
                         resolve(res);
                     }).catch(reject);
                 }
@@ -100,11 +101,11 @@
         return new Promise(function (resolve, reject) {
             self.getSiteName().then(function (SITENAME) {
                 var siteName = _siteName || SITENAME;
-                siteCache[siteName] = siteCache[siteName] || {};
-                siteCache[siteName].pageCache = siteCache[siteName].pageCache || {};
+                self.cache[siteName] = self.cache[siteName] || {};
+                self.cache[siteName].pageCache = self.cache[siteName].pageCache || {};
                 var pageName = _pageName || self.getPageName();
-                if (siteCache[siteName].pageCache[pageName]) {
-                    resolve(siteCache[siteName].pageCache[pageName]);
+                if (self.cache[siteName].pageCache[pageName]) {
+                    resolve(self.cache[siteName].pageCache[pageName]);
                 } else {
                     self.util.storage.getWithCache('page?type=detail&id=' + pageName + '&siteName=' + siteName).then(function (pageData) {
                         var _pageData = pageData || {};
@@ -119,7 +120,7 @@
                             });
                             _pageData.sources = sources;
                             resolve(_pageData);
-                            siteCache[siteName].pageCache[pageName] = _pageData;
+                            self.cache[siteName].pageCache[pageName] = _pageData;
                         });
                     }).catch(reject);
                 }

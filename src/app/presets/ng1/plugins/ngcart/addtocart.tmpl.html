@@ -1,0 +1,19 @@
+<div ng-hide="attrs.id">
+    <md-button class="md-raised" ng-disabled="true" ng-transclude></md-button>
+</div>
+<div ng-show="attrs.id">
+    <div>
+        <md-input-container ng-show="quantityMax">
+            <label>Quantity</label>
+            <md-select name="quantity" id="quantity" ng-model="q">
+                <md-option ng-repeat="v in qtyOpt" value="{{v}}">{{v}}</md-option>
+            </md-select>
+        </md-input-container>
+
+
+        <md-button class="md-raised"
+                   ng-click="addToCart(id, name, price, q, data, true)"
+                   ng-transclude>Add</md-button>
+        <!--<md-button class="md-raised" ng-click="ngCart.removeItemById(id)" style="cursor: pointer;">Remove</md-button>-->
+    </div>
+</div>

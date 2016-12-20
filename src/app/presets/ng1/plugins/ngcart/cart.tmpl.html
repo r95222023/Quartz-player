@@ -1,0 +1,61 @@
+<div class="alert alert-warning" role="alert" ng-show="ngCart.getTotalItems() === 0">
+    Your cart is empty
+</div>
+
+
+<div ng-controller="CartTableAdvancedController as vm" ng-show="ngCart.getTotalItems() > 0">
+    <md-toolbar class="md-table-toolbar md-default">
+        <div class="md-toolbar-tools">
+            <span>Shopping Cart</span>
+        </div>
+    </md-toolbar>
+
+    <md-toolbar class="md-table-toolbar md-default" ng-show="vm.filter.show && !vm.selected.length">
+        <div class="md-toolbar-tools">
+            <md-input-container flex>
+                <label>search</label>
+                <input ng-model="vm.query.filter">
+            </md-input-container>
+            <md-button class="md-icon-button" ng-click="vm.removeFilter()">
+                <md-icon md-font-icon="zmdi zmdi-close"></md-icon>
+            </md-button>
+        </div>
+
+    </md-toolbar>
+
+
+    <md-table-container>
+        <table md-table class="md-primary md-data-table" md-progress="vm.deferred">
+            <thead>
+            <tr md-row>
+                <th></th>
+                <th>Item Name</th>
+                <th>Quantity</th>
+                <th>Amount</th>
+                <th>Total</th>
+            </tr>
+            </thead>
+            <tbody md-body>
+            <tr md-row ng-repeat="item in ngCart.getCart().items track by $index">
+                <td md-cell><span ng-click="ngCart.removeItemById(item.getId())" class="zmdi zmdi-delete"></span></td>
+
+                <td md-cell>{{ item.getName() }}</td>
+                <td md-cell>
+                    <md-icon md-font-icon="zmdi zmdi-minus" ng-class="{'disabled':item.getQuantity()==1}"
+                             ng-click="item.setQuantity(-1, true)"></md-icon>
+                    &nbsp;&nbsp;
+                    {{ item.getQuantity() | number }}&nbsp;&nbsp;
+                    <md-icon md-font-icon="zmdi zmdi-plus" ng-click="item.setQuantity(1, true)"></md-icon>
+                </td>
+                <td md-cell>{{ item.getPrice() | currency}}</td>
+                <td md-cell>{{ item.getTotal() | currency }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </md-table-container>
+
+    <md-table-pagination md-limit="vm.query.limit" md-page="vm.query.page" md-total="{{ngCart.getTotalItems()}}"
+                         md-trigger="vm.getUsers"></md-table-pagination>
+
+</div>
+
